@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentFlow — UX Design Specification</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1e28;
+  --border: rgba(255,255,255,0.07);
+  --accent: #5b8dee;
+  --accent2: #7c6af7;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --display: 'DM Serif Display', Georgia, serif;
+  --body: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--body); line-height: 1.7; }
+
+/* ── scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ── layout ── */
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+/* ── cover ── */
+.cover {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,141,238,0.18) 0%, transparent 70%);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 0;
+}
+.cover-tag {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 28px;
+}
+.cover h1 {
+  font-family: var(--display); font-size: clamp(52px, 7vw, 90px);
+  font-weight: 400; line-height: 1.05; color: var(--text);
+  margin-bottom: 24px;
+}
+.cover h1 em { color: var(--accent); font-style: italic; }
+.cover-sub {
+  font-size: 18px; font-weight: 300; color: var(--muted);
+  max-width: 560px; margin-bottom: 48px; line-height: 1.7;
+}
+.cover-meta {
+  display: flex; gap: 40px; flex-wrap: wrap;
+}
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.cover-meta-value { font-size: 14px; color: var(--text); }
+
+/* ── nav ── */
+.sidenav {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 200px;
+  padding: 40px 24px;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidenav-logo { font-family: var(--display); font-size: 16px; color: var(--accent); margin-bottom: 36px; }
+.sidenav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.sidenav a {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); text-decoration: none;
+  padding: 6px 10px; border-radius: 4px; display: block;
+  transition: all 0.2s;
+}
+.sidenav a:hover { color: var(--text); background: var(--surface); }
+.sidenav a.active { color: var(--accent); background: rgba(91,141,238,0.1); }
+
+.main-content { margin-left: 200px; }
+
+/* ── section ── */
+.section {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+}
+.section h2 {
+  font-family: var(--display); font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400; line-height: 1.15; color: var(--text); margin-bottom: 24px;
+}
+.section-intro {
+  font-size: 17px; font-weight: 300; color: var(--muted);
+  max-width: 640px; margin-bottom: 48px; line-height: 1.8;
+}
+
+/* ── cards ── */
+.cards { display: grid; gap: 16px; }
+.cards-2 { grid-template-columns: 1fr 1fr; }
+.cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.card:hover { border-color: rgba(91,141,238,0.3); transform: translateY(-2px); }
+.card-icon { font-size: 28px; margin-bottom: 16px; }
+.card-title { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.card-body { font-size: 14px; font-weight: 300; color: var(--muted); line-height: 1.7; }
+.card-body strong { color: var(--text); font-weight: 500; }
+
+/* ── flow diagram ── */
+.flow {
+  display: flex; align-items: center; gap: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 32px; overflow-x: auto;
+  margin: 32px 0;
+}
+.flow-step {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; flex-shrink: 0; min-width: 100px;
+}
+.flow-bubble {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  background: var(--surface2); border: 2px solid var(--border);
+}
+.flow-bubble.accent { border-color: var(--accent); background: rgba(91,141,238,0.1); }
+.flow-bubble.green { border-color: var(--green); background: rgba(52,211,153,0.1); }
+.flow-bubble.amber { border-color: var(--amber); background: rgba(251,191,36,0.1); }
+.flow-bubble.red { border-color: var(--red); background: rgba(248,113,113,0.1); }
+.flow-label { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); text-align: center; }
+.flow-arrow { color: var(--border); font-size: 20px; margin: 0 8px; flex-shrink: 0; align-self: center; padding-bottom: 20px; }
+
+/* ── wireframe ── */
+.wireframe {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin: 32px 0;
+}
+.wf-header {
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+}
+.wf-dots { display: flex; gap: 6px; }
+.wf-dot { width: 10px; height: 10px; border-radius: 50%; }
+.wf-dot.r { background: #f87171; }
+.wf-dot.y { background: #fbbf24; }
+.wf-dot.g { background: #34d399; }
+.wf-title { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.wf-body { padding: 24px; }
+
+/* dashboard wireframe */
+.dash-layout { display: grid; grid-template-columns: 200px 1fr; gap: 16px; min-height: 400px; }
+.dash-sidebar { background: var(--surface2); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.dash-nav-item {
+  padding: 8px 12px; border-radius: 6px; font-size: 12px;
+  color: var(--muted); cursor: pointer;
+}
+.dash-nav-item.active { background: rgba(91,141,238,0.15); color: var(--accent); }
+.dash-main { display: flex; flex-direction: column; gap: 16px; }
+.dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat-card {
+  background: var(--surface2); border-radius: 8px; padding: 16px;
+  border: 1px solid var(--border);
+}
+.stat-num { font-family: var(--display); font-size: 28px; color: var(--text); }
+.stat-label { font-size: 11px; color: var(--muted); font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+.dash-workflows { background: var(--surface2); border-radius: 8px; padding: 16px; flex: 1; }
+.workflow-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.workflow-row:last-child { border-bottom: none; }
+.wf-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.wf-status.running { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s infinite; }
+.wf-status.done { background: var(--green); }
+.wf-status.waiting { background: var(--amber); }
+.wf-name { font-size: 13px; flex: 1; }
+.wf-badge { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 100px; }
+.wf-badge.running { background: rgba(91,141,238,0.15); color: var(--accent); }
+.wf-badge.done { background: rgba(52,211,153,0.15); color: var(--green); }
+.wf-badge.waiting { background: rgba(251,191,36,0.15); color: var(--amber); }
+
+/* canvas wireframe */
+.canvas-layout { display: grid; grid-template-columns: 64px 1fr 280px; gap: 0; min-height: 440px; border-radius: 8px; overflow: hidden; }
+.canvas-toolbar { background: var(--surface2); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px 0; }
+.tool-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+.tool-btn.active { background: rgba(91,141,238,0.2); border-color: var(--accent); }
+.canvas-area { background: var(--bg); position: relative; overflow: hidden; }
+.canvas-grid {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.canvas-node {
+  position: absolute;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 12px; min-width: 140px; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.canvas-node:hover, .canvas-node.selected { border-color: var(--accent); }
+.canvas-node.trigger { border-color: var(--accent); background: rgba(91,141,238,0.08); }
+.canvas-node.action { border-color: var(--border); }
+.canvas-node.approval { border-color: var(--amber); background: rgba(251,191,36,0.08); }
+.canvas-node.output { border-color: var(--green); background: rgba(52,211,153,0.08); }
+.node-type { font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+.node-type.t { color: var(--accent); }
+.node-type.a { color: var(--muted); }
+.node-type.ap { color: var(--amber); }
+.node-type.o { color: var(--green); }
+.node-name { font-size: 13px; font-weight: 500; }
+.canvas-conn {
+  position: absolute;
+  border-top: 1.5px dashed rgba(91,141,238,0.3);
+  transform-origin: left center;
+}
+.canvas-props { background: var(--surface2); border-left: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+.props-title { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.props-field { margin-bottom: 16px; }
+.props-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: var(--mono); }
+.props-input {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--text);
+  font-family: var(--body);
+}
+.props-input:focus { outline: none; border-color: var(--accent); }
+
+/* approval screen */
+.approval-screen { background: var(--surface); border: 1px solid var(--amber); border-radius: 12px; padding: 32px; margin: 32px 0; }
+.approval-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.approval-icon { font-size: 28px; }
+.approval-title { font-family: var(--display); font-size: 22px; }
+.approval-subtitle { font-size: 13px; color: var(--muted); }
+.approval-context { background: var(--surface2); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+.ctx-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ctx-value { font-size: 14px; color: var(--text); }
+.ctx-divider { height: 1px; background: var(--border); margin: 14px 0; }
+.approval-actions { display: flex; gap: 12px; }
+.btn {
+  padding: 12px 24px; border-radius: 8px; font-size: 13px;
+  font-family: var(--mono); letter-spacing: 1px; cursor: pointer; border: none;
+  transition: all 0.2s;
+}
+.btn-approve { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid var(--green); }
+.btn-approve:hover { background: var(--green); color: #0d0f14; }
+.btn-reject { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid var(--red); }
+.btn-modify { background: rgba(251,191,36,0.1); color: var(--amber); border: 1px solid var(--amber); }
+
+/* monitoring */
+.monitor-layout { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin: 32px 0; }
+.log-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.log-title { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.log-entry { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.log-entry:last-child { border-bottom: none; }
+.log-time { font-family: var(--mono); font-size: 10px; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+.log-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.log-dot.info { background: var(--accent); }
+.log-dot.success { background: var(--green); }
+.log-dot.warn { background: var(--amber); }
+.log-dot.err { background: var(--red); }
+.log-msg { font-size: 12px; line-height: 1.5; }
+.log-msg .highlight { color: var(--accent); }
+.metrics-panel { display: flex; flex-direction: column; gap: 12px; }
+.metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.metric-label { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.metric-bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.metric-bar { height: 100%; border-radius: 3px; }
+.metric-val { font-size: 12px; color: var(--text); margin-top: 6px; }
+
+/* error states */
+.error-card { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.3); border-radius: 12px; padding: 28px; margin: 16px 0; }
+.error-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.error-icon { font-size: 20px; }
+.error-title { font-size: 15px; font-weight: 500; color: var(--red); }
+.error-desc { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+.error-actions { display: flex; gap: 10px; }
+.btn-retry { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid var(--red); padding: 8px 18px; border-radius: 6px; font-size: 12px; font-family: var(--mono); cursor: pointer; }
+.btn-skip { background: var(--surface); color: var(--muted); border: 1px solid var(--border); padding: 8px 18px; border-radius: 6px; font-size: 12px; font-family: var(--mono); cursor: pointer; }
+
+/* principle pills */
+.principles { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0; }
+.pill {
+  padding: 8px 16px; border-radius: 100px; font-family: var(--mono);
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  border: 1px solid var(--border);
+}
+.pill.blue { border-color: var(--accent); color: var(--accent); background: rgba(91,141,238,0.08); }
+.pill.purple { border-color: var(--accent2); color: var(--accent2); background: rgba(124,106,247,0.08); }
+.pill.green { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.08); }
+.pill.amber { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,0.08); }
+
+/* spec table */
+.spec-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
+.spec-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.spec-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table tr:hover td { background: var(--surface); }
+.spec-table td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+
+/* ia tree */
+.ia-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; }
+.ia-root { font-family: var(--display); font-size: 18px; color: var(--accent); margin-bottom: 20px; }
+.ia-level1 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.ia-node {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+}
+.ia-node-title { font-family: var(--mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.ia-node-items { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.ia-node-items li { font-size: 12px; color: var(--muted); padding-left: 12px; position: relative; }
+.ia-node-items li::before { content: '—'; position: absolute; left: 0; color: var(--border); }
+
+/* annotations */
+.annotation { display: flex; gap: 14px; padding: 16px; background: rgba(91,141,238,0.06); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; margin: 16px 0; }
+.ann-num { font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; padding-top: 2px; }
+.ann-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.ann-text strong { color: var(--text); }
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+@media (max-width: 900px) {
+  .sidenav { display: none; }
+  .main-content { margin-left: 0; }
+  .cards-2, .cards-3 { grid-template-columns: 1fr; }
+  .ia-level1 { grid-template-columns: 1fr 1fr; }
+  .dash-layout { grid-template-columns: 1fr; }
+  .canvas-layout { grid-template-columns: 1fr; }
+  .monitor-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="sidenav">
+  <div class="sidenav-logo">AgentFlow</div>
+  <ul>
+    <li><a href="#cover" class="active">Overview</a></li>
+    <li><a href="#principles">Principles</a></li>
+    <li><a href="#ia">Architecture</a></li>
+    <li><a href="#flows">User Flows</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#canvas">Canvas</a></li>
+    <li><a href="#approval">Approvals</a></li>
+    <li><a href="#monitoring">Monitoring</a></li>
+    <li><a href="#errors">Error Handling</a></li>
+    <li><a href="#components">Components</a></li>
+  </ul>
+</nav>
+
+<div class="main-content">
+
+<!-- COVER -->
+<section class="cover" id="cover">
+  <div class="wrap">
+    <p class="cover-tag">UX Design Specification · v1.0 · 2025</p>
+    <h1>Agent<em>Flow</em></h1>
+    <p class="cover-sub">A UX design specification for an AI workflow builder designed for non-technical professionals. Focused on simplicity, trust, transparency, and agentic AI interactions.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Designed by</span>
+        <span class="cover-meta-value">Senior UX, Google</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Platform</span>
+        <span class="cover-meta-value">Web / Desktop</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Target User</span>
+        <span class="cover-meta-value">Non-technical professionals</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">AI Paradigm</span>
+        <span class="cover-meta-value">Agentic workflows</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section class="section" id="principles">
+  <div class="wrap">
+    <p class="section-num">01 — Design Principles</p>
+    <h2>Four pillars that govern every decision</h2>
+    <p class="section-intro">AgentFlow's UX is built on four non-negotiable principles. Every interaction, every screen, every micro-copy choice is evaluated against these.</p>
+
+    <div class="principles">
+      <span class="pill blue">Simplicity</span>
+      <span class="pill purple">Trust</span>
+      <span class="pill green">Transparency</span>
+      <span class="pill amber">Human Control</span>
+    </div>
+
+    <div class="cards cards-2">
+      <div class="card">
+        <div class="card-icon">🧭</div>
+        <div class="card-title">Simplicity</div>
+        <div class="card-body">Non-technical users should never feel lost. <strong>Progressive disclosure</strong> hides complexity until needed. Plain language over jargon. Templates and guided setup over blank canvases. Every feature must justify its cognitive cost.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤝</div>
+        <div class="card-title">Trust</div>
+        <div class="card-body"><strong>Trust is earned, not assumed.</strong> AgentFlow makes AI actions legible before they happen. Users see what an agent will do, not just what it did. Confidence scores, source citations, and audit trails are default-on, not settings.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Transparency</div>
+        <div class="card-body">The system explains its reasoning at every step. <strong>No black boxes.</strong> When an agent makes a decision, it shows the data it used. When it's uncertain, it says so. Users can always inspect the "why" behind any AI output.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎛️</div>
+        <div class="card-title">Human Control</div>
+        <div class="card-body">Agents assist, they don't replace human judgment on consequential actions. <strong>Approval gates are first-class citizens</strong> in the UI — not add-ons. Users can pause, modify, or abort any workflow at any point without losing state.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IA -->
+<section class="section" id="ia">
+  <div class="wrap">
+    <p class="section-num">02 — Information Architecture</p>
+    <h2>How the product is structured</h2>
+    <p class="section-intro">AgentFlow organises around five primary areas. The IA is deliberately flat — maximum two levels deep — to reduce navigation overhead for non-technical users.</p>
+
+    <div class="ia-tree">
+      <div class="ia-root">AgentFlow</div>
+      <div class="ia-level1">
+        <div class="ia-node">
+          <div class="ia-node-title">Home</div>
+          <ul class="ia-node-items">
+            <li>Recent workflows</li>
+            <li>Active runs</li>
+            <li>Pending approvals</li>
+            <li>Quick start</li>
+          </ul>
+        </div>
+        <div class="ia-node">
+          <div class="ia-node-title">Workflows</div>
+          <ul class="ia-node-items">
+            <li>All workflows</li>
+            <li>Templates</li>
+            <li>Canvas editor</li>
+            <li>Version history</li>
+          </ul>
+        </div>
+        <div class="ia-node">
+          <div class="ia-node-title">Runs</div>
+          <ul class="ia-node-items">
+            <li>Live monitoring</li>
+            <li>Run history</li>
+            <li>Execution logs</li>
+            <li>Performance</li>
+          </ul>
+        </div>
+        <div class="ia-node">
+          <div class="ia-node-title">Approvals</div>
+          <ul class="ia-node-items">
+            <li>My queue</li>
+            <li>Team queue</li>
+            <li>Decision history</li>
+            <li>Escalations</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <div class="annotation">
+        <span class="ann-num">IA-1</span>
+        <span class="ann-text"><strong>Approvals as a top-level section</strong> — not nested under workflows. Non-technical users need to review and approve AI actions regularly. Burying approvals creates missed decisions and erodes trust.</span>
+      </div>
+      <div class="annotation">
+        <span class="ann-num">IA-2</span>
+        <span class="ann-text"><strong>Flat hierarchy intentional</strong> — users should reach any screen in 2 clicks maximum. Depth is an enemy of adoption for non-technical audiences.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USER FLOWS -->
+<section class="section" id="flows">
+  <div class="wrap">
+    <p class="section-num">03 — User Flows</p>
+    <h2>Three critical journeys</h2>
+    <p class="section-intro">These flows cover the most frequent and highest-stakes user journeys in AgentFlow.</p>
+
+    <div style="margin-bottom: 40px;">
+      <div class="card-title" style="color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: 2px; margin-bottom: 16px;">FLOW A — Create a workflow from scratch</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-bubble accent">🏠</div>
+          <div class="flow-label">Dashboard</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble accent">✨</div>
+          <div class="flow-label">New Workflow</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble">📋</div>
+          <div class="flow-label">Pick Template or Blank</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble">🎨</div>
+          <div class="flow-label">Canvas Editor</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble amber">👁️</div>
+          <div class="flow-label">Preview & Test</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble green">🚀</div>
+          <div class="flow-label">Publish</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 40px;">
+      <div class="card-title" style="color: var(--amber); font-family: var(--mono); font-size: 11px; letter-spacing: 2px; margin-bottom: 16px;">FLOW B — Review & approve an agent action</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-bubble amber">🔔</div>
+          <div class="flow-label">Notification</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble amber">📋</div>
+          <div class="flow-label">Approval Queue</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble amber">🔍</div>
+          <div class="flow-label">Review Context</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble amber">🤔</div>
+          <div class="flow-label">Approve / Modify / Reject</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble green">✅</div>
+          <div class="flow-label">Agent Resumes</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-title" style="color: var(--red); font-family: var(--mono); font-size: 11px; letter-spacing: 2px; margin-bottom: 16px;">FLOW C — Investigate a failed run</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-bubble red">⚠️</div>
+          <div class="flow-label">Error Alert</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble red">📊</div>
+          <div class="flow-label">Run Detail</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble">🔎</div>
+          <div class="flow-label">Step Breakdown</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble">💡</div>
+          <div class="flow-label">AI Suggestion</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-bubble green">🔄</div>
+          <div class="flow-label">Retry / Fix</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="section" id="dashboard">
+  <div class="wrap">
+    <p class="section-num">04 — Dashboard Design</p>
+    <h2>Command centre for non-technical users</h2>
+    <p class="section-intro">The dashboard is designed around status awareness, not configuration. Users need to know what's running, what needs attention, and what succeeded — at a glance.</p>
+
+    <div class="wireframe">
+      <div class="wf-header">
+        <div class="wf-dots"><div class="wf-dot r"></div><div class="wf-dot y"></div><div class="wf-dot g"></div></div>
+        <div class="wf-title">AgentFlow — Home Dashboard</div>
+      </div>
+      <div class="wf-body">
+        <div class="dash-layout">
+          <div class="dash-sidebar">
+            <div class="dash-nav-item active">🏠 Home</div>
+            <div class="dash-nav-item">⚡ Workflows</div>
+            <div class="dash-nav-item">▶ Runs</div>
+            <div class="dash-nav-item">🔔 Approvals <span style="background:rgba(251,191,36,0.2);color:var(--amber);padding:1px 6px;border-radius:10px;font-size:10px;margin-left:4px;">3</span></div>
+            <div class="dash-nav-item">⚙️ Settings</div>
+          </div>
+          <div class="dash-main">
+            <div class="dash-stats">
+              <div class="stat-card"><div class="stat-num" style="color:var(--green)">12</div><div class="stat-label">Active Runs</div></div>
+              <div class="stat-card"><div class="stat-num" style="color:var(--amber)">3</div><div class="stat-label">Awaiting You</div></div>
+              <div class="stat-card"><div class="stat-num">47</div><div class="stat-label">Completed Today</div></div>
+              <div class="stat-card"><div class="stat-num" style="color:var(--red)">1</div><div class="stat-label">Failed</div></div>
+            </div>
+            <div class="dash-workflows">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Recent Workflows</div>
+              <div class="workflow-row"><div class="wf-status running"></div><div class="wf-name">Customer Onboarding Sequence</div><div class="wf-badge running">Running</div></div>
+              <div class="workflow-row"><div class="wf-status waiting"></div><div class="wf-name">Monthly Report Generator</div><div class="wf-badge waiting">Approval needed</div></div>
+              <div class="workflow-row"><div class="wf-status done"></div><div class="wf-name">Lead Enrichment Pipeline</div><div class="wf-badge done">Completed</div></div>
+              <div class="workflow-row"><div class="wf-status running"></div><div class="wf-name">Invoice Processing Agent</div><div class="wf-badge running">Running</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation">
+      <span class="ann-num">D-1</span>
+      <span class="ann-text"><strong>"Awaiting You" badge</strong> — approval requests get their own stat card in high-contrast amber. Non-technical users are the decision-makers; making approval count prominent ensures nothing gets missed.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">D-2</span>
+      <span class="ann-text"><strong>Status over configuration</strong> — the dashboard leads with live run status, not workflow settings. Users care about what's happening right now, not how things are configured.</span>
+    </div>
+  </div>
+</section>
+
+<!-- CANVAS -->
+<section class="section" id="canvas">
+  <div class="wrap">
+    <p class="section-num">05 — Workflow Canvas</p>
+    <h2>Build without engineering skills</h2>
+    <p class="section-intro">The canvas is the heart of AgentFlow. It must feel powerful to advanced users while remaining approachable for non-technical professionals. Node types are colour-coded and named in plain language.</p>
+
+    <div class="wireframe">
+      <div class="wf-header">
+        <div class="wf-dots"><div class="wf-dot r"></div><div class="wf-dot y"></div><div class="wf-dot g"></div></div>
+        <div class="wf-title">Canvas Editor — Customer Onboarding Workflow</div>
+      </div>
+      <div class="wf-body" style="padding:0">
+        <div class="canvas-layout">
+          <div class="canvas-toolbar">
+            <div class="tool-btn active">↖</div>
+            <div class="tool-btn">➕</div>
+            <div class="tool-btn">✋</div>
+            <div style="height:1px;background:var(--border);width:80%;margin:4px auto;"></div>
+            <div class="tool-btn">↩</div>
+            <div class="tool-btn">↪</div>
+          </div>
+          <div class="canvas-area" style="height:380px; min-width:300px;">
+            <div class="canvas-grid"></div>
+            <!-- Nodes -->
+            <div class="canvas-node trigger" style="top:40px;left:30px;">
+              <div class="node-type t">Trigger</div>
+              <div class="node-name">New Signup</div>
+            </div>
+            <div class="canvas-node action" style="top:40px;left:200px;">
+              <div class="node-type a">AI Action</div>
+              <div class="node-name">Enrich Contact</div>
+            </div>
+            <div class="canvas-node approval" style="top:160px;left:200px;">
+              <div class="node-type ap">Approval Gate</div>
+              <div class="node-name">Review &amp; Confirm</div>
+            </div>
+            <div class="canvas-node action" style="top:280px;left:200px;">
+              <div class="node-type a">Action</div>
+              <div class="node-name">Send Welcome Email</div>
+            </div>
+            <div class="canvas-node output" style="top:280px;left:360px;">
+              <div class="node-type o">Output</div>
+              <div class="node-name">CRM Updated</div>
+            </div>
+            <!-- connection lines (decorative) -->
+            <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
+              <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(91,141,238,0.4)"/></marker></defs>
+              <path d="M178,68 L200,68" stroke="rgba(91,141,238,0.4)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+              <path d="M265,108 L265,160" stroke="rgba(251,191,36,0.4)" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+              <path d="M265,220 L265,280" stroke="rgba(91,141,238,0.4)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+              <path d="M358,308 L360,308" stroke="rgba(52,211,153,0.4)" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+            </svg>
+          </div>
+          <div class="canvas-props">
+            <div class="props-title">Node Properties</div>
+            <div style="font-size:13px;font-weight:500;color:var(--accent);margin-bottom:16px;">⚡ Approval Gate</div>
+            <div class="props-field">
+              <div class="props-label">Gate Name</div>
+              <input class="props-input" value="Review & Confirm" readonly>
+            </div>
+            <div class="props-field">
+              <div class="props-label">Assigned To</div>
+              <input class="props-input" value="me@company.com" readonly>
+            </div>
+            <div class="props-field">
+              <div class="props-label">Timeout</div>
+              <input class="props-input" value="24 hours" readonly>
+            </div>
+            <div class="props-field">
+              <div class="props-label">If Timeout</div>
+              <input class="props-input" value="Escalate to manager" readonly>
+            </div>
+            <div style="margin-top:16px;padding:10px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:6px;font-size:11px;color:var(--amber);">
+              ⚠️ Agent will pause here and wait for your decision before continuing.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards cards-3" style="margin-top:24px;">
+      <div class="card">
+        <div class="card-title">Node Types</div>
+        <div class="card-body"><strong style="color:var(--accent)">Trigger</strong> — starts the workflow. <strong style="color:var(--muted)">AI Action</strong> — agent does something. <strong style="color:var(--amber)">Approval Gate</strong> — human reviews. <strong style="color:var(--green)">Output</strong> — final result.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Plain Language Labels</div>
+        <div class="card-body">All nodes use <strong>business language</strong>, not technical terms. "Enrich Contact" not "POST /api/crm/enrich". "Send Welcome Email" not "SMTP trigger node". Users recognise their own workflows.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">AI Suggestions</div>
+        <div class="card-body">When a user adds a trigger, the canvas <strong>suggests the next 3 most common following steps</strong> based on workflow patterns. Reduces blank canvas anxiety for non-technical users.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROVAL -->
+<section class="section" id="approval">
+  <div class="wrap">
+    <p class="section-num">06 — Human Approval Screens</p>
+    <h2>The moment that builds trust</h2>
+    <p class="section-intro">Approval screens are the most trust-critical surface in AgentFlow. They must give enough context to make a confident decision, without overwhelming the reviewer with technical details.</p>
+
+    <div class="approval-screen">
+      <div class="approval-header">
+        <div class="approval-icon">⏸️</div>
+        <div>
+          <div class="approval-title">Agent is waiting for your decision</div>
+          <div class="approval-subtitle">Customer Onboarding Sequence · Step 2 of 5 · Paused 4 minutes ago</div>
+        </div>
+      </div>
+
+      <div class="approval-context">
+        <div class="ctx-label">What the agent wants to do</div>
+        <div class="ctx-value" style="font-size:16px;margin-top:4px;">Send a personalised welcome email to <strong>Sarah Chen</strong> at <strong>Acme Corp</strong></div>
+        <div class="ctx-divider"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div>
+            <div class="ctx-label">Why it's doing this</div>
+            <div class="ctx-value" style="font-size:13px;margin-top:4px;">Sarah signed up 12 minutes ago. The enrichment step identified her as a <strong>VP-level contact</strong> at a 200+ person company — your workflow rules flag this tier for human review before first contact.</div>
+          </div>
+          <div>
+            <div class="ctx-label">What it will send</div>
+            <div class="ctx-value" style="font-size:13px;margin-top:4px;font-family:var(--mono);background:var(--bg);padding:10px;border-radius:6px;line-height:1.6;">Subject: Welcome to AgentFlow, Sarah<br><br>Hi Sarah, great to have you on board. Given your role at Acme Corp, I'd love to schedule a 20-min call...</div>
+          </div>
+        </div>
+
+        <div class="ctx-divider"></div>
+        <div class="ctx-label">Confidence &amp; Sources</div>
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+          <span style="font-size:12px;background:rgba(52,211,153,0.1);color:var(--green);padding:4px 12px;border-radius:100px;border:1px solid var(--green);">95% contact match confidence</span>
+          <span style="font-size:12px;color:var(--muted);padding:4px 12px;">Sources: LinkedIn, Clearbit, CRM</span>
+        </div>
+      </div>
+
+      <div class="approval-actions">
+        <button class="btn btn-approve">✓ Approve — send now</button>
+        <button class="btn btn-modify">✎ Modify before sending</button>
+        <button class="btn btn-reject">✕ Reject — skip this contact</button>
+      </div>
+    </div>
+
+    <div class="annotation">
+      <span class="ann-num">A-1</span>
+      <span class="ann-text"><strong>"What the agent wants to do"</strong> — one clear sentence in plain English before any detail. Reviewers must instantly understand the action without reading context first.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">A-2</span>
+      <span class="ann-text"><strong>Confidence scores are surfaced</strong>, not hidden in settings. A 95% match score gives reviewers permission to approve quickly. A 60% score signals caution. Transparency earns trust.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">A-3</span>
+      <span class="ann-text"><strong>Three decision options, not two</strong> — Approve / Modify / Reject. "Modify before sending" is the critical middle path that US-only Approve/Reject designs miss. It respects the user's judgment without blocking the workflow entirely.</span>
+    </div>
+  </div>
+</section>
+
+<!-- MONITORING -->
+<section class="section" id="monitoring">
+  <div class="wrap">
+    <p class="section-num">07 — Execution Monitoring</p>
+    <h2>Watch your agents work in real time</h2>
+    <p class="section-intro">Monitoring gives users confidence that agents are behaving as expected. It's not a debug console — it's a live status feed in human language, with metrics alongside.</p>
+
+    <div class="monitor-layout">
+      <div class="log-panel">
+        <div class="log-title">Live Execution Log — Customer Onboarding</div>
+        <div class="log-entry">
+          <div class="log-time">14:02:01</div>
+          <div class="log-dot info"></div>
+          <div class="log-msg">Workflow started — triggered by new signup: <span class="highlight">sarah@acmecorp.com</span></div>
+        </div>
+        <div class="log-entry">
+          <div class="log-time">14:02:03</div>
+          <div class="log-dot info"></div>
+          <div class="log-msg">Agent is enriching contact data from LinkedIn and Clearbit…</div>
+        </div>
+        <div class="log-entry">
+          <div class="log-time">14:02:09</div>
+          <div class="log-dot success"></div>
+          <div class="log-msg">Contact enriched — <span class="highlight">VP Operations, Acme Corp (220 employees)</span>. Confidence: 95%.</div>
+        </div>
+        <div class="log-entry">
+          <div class="log-time">14:02:10</div>
+          <div class="log-dot warn"></div>
+          <div class="log-msg">⏸ Paused at Approval Gate — VP-level contact requires your review before outreach.</div>
+        </div>
+        <div class="log-entry">
+          <div class="log-time">14:06:44</div>
+          <div class="log-dot success"></div>
+          <div class="log-msg">✅ Approved by you — sending welcome email now…</div>
+        </div>
+        <div class="log-entry">
+          <div class="log-time">14:06:47</div>
+          <div class="log-dot success"></div>
+          <div class="log-msg">Email delivered. CRM record updated. Workflow complete.</div>
+        </div>
+      </div>
+
+      <div class="metrics-panel">
+        <div class="metric-card">
+          <div class="metric-label">Steps Completed</div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:80%;background:var(--green);"></div></div>
+          <div class="metric-val">4 of 5 steps done</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Agent Confidence</div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:95%;background:var(--accent);"></div></div>
+          <div class="metric-val">95% average</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Time Elapsed</div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:30%;background:var(--accent2);"></div></div>
+          <div class="metric-val">4m 46s of est. 15m</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Human Decisions</div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:50%;background:var(--amber);"></div></div>
+          <div class="metric-val">1 of 2 gates resolved</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation">
+      <span class="ann-num">M-1</span>
+      <span class="ann-text"><strong>Logs in plain English, not code</strong> — "Agent is enriching contact data" not "POST /api/enrichment 200 OK". Non-technical users must read logs and feel informed, not confused.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">M-2</span>
+      <span class="ann-text"><strong>Approval pauses are surfaced in the log</strong> with a ⏸ icon and a clear reason. Users see exactly why the workflow stopped and what they need to do — reducing support tickets about "stuck workflows."</span>
+    </div>
+  </div>
+</section>
+
+<!-- ERRORS -->
+<section class="section" id="errors">
+  <div class="wrap">
+    <p class="section-num">08 — Error Handling</p>
+    <h2>Failures that don't feel like failures</h2>
+    <p class="section-intro">Error states are where trust is lost — or saved. AgentFlow's error handling follows one rule: always tell the user what happened, why, and exactly what they can do next.</p>
+
+    <div class="cards cards-3" style="margin-bottom:32px;">
+      <div class="card">
+        <div class="card-icon">🔌</div>
+        <div class="card-title">Integration Error</div>
+        <div class="card-body">External service is unreachable. Agent <strong>pauses automatically</strong>, preserves state, and notifies the user. Retry is one click. No data is lost.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤷</div>
+        <div class="card-title">Low Confidence</div>
+        <div class="card-body">Agent is uncertain about a decision. Instead of guessing, it <strong>routes to human review</strong> with the uncertainty explained. Treated as an approval, not an error.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏱️</div>
+        <div class="card-title">Timeout / Stall</div>
+        <div class="card-body">Workflow hasn't progressed in X minutes. User is <strong>notified with context</strong> — last successful step, what the agent was attempting, and suggested actions.</div>
+      </div>
+    </div>
+
+    <div class="error-card">
+      <div class="error-header">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title">Step failed: CRM Update</div>
+      </div>
+      <div class="error-desc">
+        The agent tried to update Salesforce with Sarah's enriched contact data, but the connection timed out.
+        <strong style="color:var(--text)"> Your workflow is paused — no data was lost and no duplicate records were created.</strong>
+        <br><br>
+        This usually happens when Salesforce is under maintenance. You can retry now or skip this step and update manually later.
+      </div>
+      <div class="error-actions">
+        <button class="btn-retry btn">↻ Retry now</button>
+        <button class="btn-skip btn">→ Skip &amp; continue</button>
+        <button class="btn-skip btn" style="color:var(--accent);border-color:var(--accent);">📋 View details</button>
+      </div>
+    </div>
+
+    <div class="annotation">
+      <span class="ann-num">E-1</span>
+      <span class="ann-text"><strong>"No data was lost"</strong> — this phrase must appear in every error message where state is preserved. It's the single most anxiety-reducing statement for non-technical users. Say it explicitly.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">E-2</span>
+      <span class="ann-text"><strong>Never show raw error codes</strong> to non-technical users. "Salesforce connection timed out" is acceptable. "Error 504: Gateway Timeout on POST /services/data/v57.0/sobjects/Contact" is not.</span>
+    </div>
+    <div class="annotation">
+      <span class="ann-num">E-3</span>
+      <span class="ann-text"><strong>Low-confidence states are not errors</strong> — they are transparency signals. Routing uncertainty to human review is a feature, not a failure. The UI distinguishes the two clearly with different visual treatment (amber vs red).</span>
+    </div>
+  </div>
+</section>
+
+<!-- COMPONENTS -->
+<section class="section" id="components">
+  <div class="wrap">
+    <p class="section-num">09 — Component Spec</p>
+    <h2>Design system decisions</h2>
+    <p class="section-intro">Key component decisions that enforce the four design principles across every screen.</p>
+
+    <table class="spec-table">
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Design Decision</th>
+          <th>Principle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Status Indicator</td>
+          <td>Colour + icon + text label — never colour alone. Accessible for colourblind users. Running (blue pulse), Paused (amber), Done (green), Failed (red).</td>
+          <td>Transparency</td>
+        </tr>
+        <tr>
+          <td>Approval Gate Node</td>
+          <td>Visually distinct amber border on canvas. Cannot be accidentally deleted — requires explicit "Remove gate" confirmation. Always shows assignee and timeout.</td>
+          <td>Human Control</td>
+        </tr>
+        <tr>
+          <td>Confidence Score</td>
+          <td>Shown as percentage + colour bar. Green &gt;85%, Amber 60–85%, Red &lt;60%. Red automatically routes to approval. Never hidden in settings.</td>
+          <td>Transparency, Trust</td>
+        </tr>
+        <tr>
+          <td>Error Message</td>
+          <td>Three-part structure: what happened (plain English) + reassurance (state preserved) + what to do next (1–3 action buttons). Never raw API errors.</td>
+          <td>Simplicity, Trust</td>
+        </tr>
+        <tr>
+          <td>AI Explanation</td>
+          <td>"Why did the agent do this?" is available on every AI action node — one click, expandable panel. Never buried in logs. Uses natural language, not JSON.</td>
+          <td>Transparency</td>
+        </tr>
+        <tr>
+          <td>Undo / Abort</td>
+          <td>Global keyboard shortcut ⌘Z for canvas. "Pause workflow" button always visible in monitoring header. "Abort run" requires confirmation with consequence summary.</td>
+          <td>Human Control</td>
+        </tr>
+        <tr>
+          <td>Empty States</td>
+          <td>Never blank. Always includes: what this section is for + a primary action button + a link to a template. Reduces blank canvas anxiety.</td>
+          <td>Simplicity</td>
+        </tr>
+        <tr>
+          <td>Notification</td>
+          <td>Approval requests: push + email + in-app badge. Run completions: in-app only (not email). Failures: push + email. User controls notification level per workflow.</td>
+          <td>Human Control</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:48px;padding:32px;background:var(--surface);border:1px solid var(--border);border-radius:12px;text-align:center;">
+      <div style="font-family:var(--display);font-size:28px;margin-bottom:12px;">AgentFlow</div>
+      <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:24px;">End of specification · v1.0</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <span class="pill blue">Simplicity</span>
+        <span class="pill purple">Trust</span>
+        <span class="pill green">Transparency</span>
+        <span class="pill amber">Human Control</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Active nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.sidenav a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidenav a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
